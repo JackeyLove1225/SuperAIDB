@@ -1,0 +1,6 @@
+# test_19 专用数据源：独立刮削库，与演示库/其他测试库全隔离
+datasources:
+  primary:
+    type: sqlite
+    path: ./db/test_dml.db
+    is_default: true

@@ -1,0 +1,10 @@
+waivers:
+- rule: R3
+  match: fed_a
+  reason: 联邦测试夹具表名，本文件大量断言引用
+- rule: R3
+  match: fed_b
+  reason: 同上
+- rule: R3
+  match: a_id
+  reason: 与 fed_a/fed_b 命名同批豁免

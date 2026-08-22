@@ -1,0 +1,6 @@
+# test_22 走查专用数据源：独立刮削库，与其他测试库全隔离
+datasources:
+  primary:
+    type: sqlite
+    path: ./db/test_unified_loop.db
+    is_default: true

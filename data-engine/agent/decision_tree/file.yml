@@ -1,0 +1,24 @@
+# 决策树·文件域（bk=导入/上传/导出）：文件入库/模板导入/上传/导出
+# st 与 save_tmpl 同工具（save_template）不同节点——导出兜底的历史行为保留
+
+nodes:
+  im_obj:
+    c: db
+    m: 文件
+    l: pf
+    r: it
+  ex_obj:
+    c: db
+    m: 记录
+    l: export
+    r: st
+  pf:
+    tool: process_file
+  it:
+    tool: import_template
+  uf:
+    tool: upload_file
+  export:
+    tool: export_data
+  st:
+    tool: save_template

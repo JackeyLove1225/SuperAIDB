@@ -1,0 +1,34 @@
+name: quota_machines
+business_name: 定额机械明细表
+description: 存储每个定额项目下消耗的机械台班明细，与定额项目主表通过quota_code关联
+columns:
+- name: id
+  type: INTEGER
+  pk: true
+  not_null: true
+  business_name: 主键
+- name: quota_item_id
+  type: INTEGER
+  business_name: 所属定额项目
+- name: machine_name
+  type: TEXT
+  business_name: 机械名称
+- name: machine_model
+  type: TEXT
+  business_name: 机械型号
+- name: shift_quantity
+  type: FLOAT
+  business_name: 台班数量
+- name: shift_price
+  type: FLOAT
+  business_name: 台班单价
+foreign_keys:
+- columns:
+  - quota_item_id
+  references: quota_items
+  ref_columns:
+  - id
+display:
+  hide_columns:
+  - id
+  - quota_item_id

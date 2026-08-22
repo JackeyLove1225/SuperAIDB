@@ -1,0 +1,31 @@
+# 3.2 角色化模型配置（llm_roles.yml）
+# 选模与落账同一角色体系——角色清单与职责见 core/llm_usage.py 头注释；
+# 默认分档依据 3.0 报告（docs/stats/3.0_token成本分布_20260806.md 的 TIER_MAP）。
+#
+# 解析顺序（agent/open_layer/graph.py::_resolve_role_model 实现）：
+#   1. roles[角色] 写档位名（planning/mechanical）→ 查 tiers[档位]；
+#      档位值为空时回退 settings：planning→AI_MODEL_PLANNING→AI_MODEL，mechanical→AI_MODEL
+#   2. roles[角色] 写其他字符串 → 视为具体模型名直接用（角色级细调，绕过档位）
+#   3. 角色未配置 → mechanical（控成本保守默认）
+#   4. 本文件缺失/损坏 → fail-open：planning 参数语义（与 3.2 之前行为一致）
+#
+# 成本权衡（3.0 报告：规划档 93.7% / 机械档 6.3%）：
+#   - agent_loop 占 26.0% 且缓存命中 87%，从 planning 下调 mechanical 可省约一半循环成本，
+#     但循环每步的工具选择质量会降——调档前先用 test_22 mock 回归 + 真实路径走查验证。
+#   - ooda_correct 是信号综合判断，现状吃机械档（flash）已够用，不宜上调。
+
+tiers:
+  planning: ""      # 空 = settings.AI_MODEL_PLANNING → AI_MODEL；可写模型名如 deepseek-v4-pro
+  mechanical: ""    # 空 = settings.AI_MODEL（默认 deepseek-v4-flash）
+
+roles:
+  decompose: planning        # 拆解（意图理解核心步，答非所问多源于此）
+  synthesize: planning       # 综合（多子任务结果汇总）
+  agent_loop: planning       # 统一循环每步规划（工具选择质量=聪明下限）
+  research: planning         # 深度研究 OODA
+  review: planning           # 未识别问法审查映射（需推理）
+  schema_design: planning    # 建库 schema 设计（推理密集）
+  extract_param: mechanical  # 工具参数提取（raw 侧 AIClient，本文件不管辖，标注用）
+  extract_file: mechanical   # 文件管道提取（raw 侧，同上）
+  ooda_correct: mechanical   # executor OODA 纠错（structured_args 重生成）
+  other: mechanical          # 未标注兜底

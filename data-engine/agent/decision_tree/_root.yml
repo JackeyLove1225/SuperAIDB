@@ -1,0 +1,50 @@
+# ═══════════════════════════════════════════════════════════════
+# 决策树·根链（behavior 分流）—— 3.3 模块化拆分：本目录多文件合并加载
+# ═══════════════════════════════════════════════════════════════
+#
+# 拆分约定（agent/router.py::_load_nodes 加载期强制）：
+#   1. 本目录全部 *.yml 的 nodes 合并为一棵树校验/路由，节点 id 跨文件唯一
+#   2. 结构约定（决策节点 c/m/l/r、叶子 tool、l1 根、四项校验）不变，
+#      与拆分前单文件完全一致——拆分只改物理组织，不改路由语义
+#   3. 文件按意图域组织：_root(分流链) / query / insert / update / delete /
+#      file / _shared(跨域共享叶子)
+#
+# 根链职责：按 behavior（查/增/改/删/导入/上传/导出）顺序分流到各域子树；
+# 未匹配 behavior 兜底到 st（save_template，历史行为保留）。
+
+nodes:
+  l1:
+    c: behavior
+    m: 查
+    l: q_obj
+    r: l2_add
+  l2_add:
+    c: behavior
+    m: 增
+    l: add_obj
+    r: l3_mod
+  l3_mod:
+    c: behavior
+    m: 改
+    l: mod_obj
+    r: l4_del
+  l4_del:
+    c: behavior
+    m: 删
+    l: del_obj
+    r: l5_im
+  l5_im:
+    c: behavior
+    m: 导入
+    l: im_obj
+    r: l6_up_ex
+  l6_up_ex:
+    c: behavior
+    m: 上传
+    l: uf
+    r: l7_ex
+  l7_ex:
+    c: behavior
+    m: 导出
+    l: ex_obj
+    r: st

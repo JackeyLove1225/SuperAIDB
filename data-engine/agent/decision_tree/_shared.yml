@@ -1,0 +1,17 @@
+# 决策树·跨域共享叶子：被两个以上意图域引用的叶子节点
+# （ds=查/增/改；save_tmpl=增/改；afk/ci=增/改；mc=改/删；clear_db=改/删）
+# 新叶子若只属单一域，放各域文件；确认跨域复用才进本文件
+
+nodes:
+  ds:
+    tool: describe_schema
+  save_tmpl:
+    tool: save_template
+  afk:
+    tool: add_foreign_key
+  ci:
+    tool: create_index
+  mc:
+    tool: modify_column
+  clear_db:
+    tool: clear_db

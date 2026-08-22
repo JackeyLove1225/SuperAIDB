@@ -1,0 +1,5 @@
+datasources:
+  primary:
+    is_default: true
+    path: ./db/data_engine.db
+    type: sqlite

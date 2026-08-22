@@ -1,0 +1,31 @@
+name: quota_labor
+business_name: 定额人工明细表
+description: 存储每个定额项目下消耗的人工工种及工日数量，与定额项目主表通过quota_code关联
+columns:
+- name: id
+  type: INTEGER
+  pk: true
+  not_null: true
+  business_name: 主键
+- name: quota_item_id
+  type: INTEGER
+  business_name: 所属定额项目
+- name: labor_type
+  type: TEXT
+  business_name: 工种名称
+- name: work_day_quantity
+  type: FLOAT
+  business_name: 工日数量
+- name: day_wage_rate
+  type: FLOAT
+  business_name: 日工资单价
+foreign_keys:
+- columns:
+  - quota_item_id
+  references: quota_items
+  ref_columns:
+  - id
+display:
+  hide_columns:
+  - id
+  - quota_item_id

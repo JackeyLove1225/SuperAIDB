@@ -1,0 +1,25 @@
+# 目标达成检测规则——写操作执行后由 core/goal_verify 独立复查（与工具层零耦合）
+#
+# 语义：AI 声明"改了/删了/插了 N 条"，验证器从 effects 提取目标，独立发起
+# 复查查询（自身过权限与契约层），比对数据库真实状态。
+# 不符时显式报告（"声明删 3 条但复查仍在"），不静默、不自动回滚。
+#
+# enabled: false 可整体关闭；rules.<ACTION>.enabled: false 按操作类型关闭。
+# checks 可按需裁剪：
+#   records_absent  删除后目标 id 应不存在（DELETE）
+#   records_exist   更新/插入后目标应存在（UPDATE/INSERT）
+#   fields_match    更新后字段值与声明值对账（UPDATE，需 effects.expected_values）
+#   row_count       声明影响行数与目标集行数对账（需 effects.affected_ids）
+
+enabled: true
+
+rules:
+  INSERT:
+    enabled: true
+    checks: ["records_exist", "row_count"]
+  UPDATE:
+    enabled: true
+    checks: ["records_exist", "fields_match"]
+  DELETE:
+    enabled: true
+    checks: ["records_absent", "row_count"]

@@ -1,0 +1,11 @@
+# 测试专用数据源配置（与生产 config/datasources.yml 隔离）
+# 由测试通过 DataSourceManager.load_config(此路径) 显式加载，见 tests/test_06_federation.py
+datasources:
+  primary:
+    type: sqlite
+    path: ./db/data_engine.db
+    is_default: true
+  secondary:
+    type: sqlite
+    path: ./db/secondary_test.db
+    is_default: false

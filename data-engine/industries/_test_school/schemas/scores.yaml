@@ -1,0 +1,100 @@
+name: scores
+business_name: 成绩
+description: 存储学生各科成绩
+columns:
+- name: id
+  type: INTEGER
+  not_null: true
+  is_pk: true
+  autoincrement: true
+  is_unique: false
+  is_indexed: false
+  check_constraint: ''
+  check_template_key: ''
+  check_template_params: {}
+  description: 主键
+  position: 0
+- name: student_id
+  type: INTEGER
+  not_null: true
+  is_pk: false
+  autoincrement: false
+  is_unique: false
+  is_indexed: false
+  check_constraint: ''
+  check_template_key: ''
+  check_template_params: {}
+  description: 学生ID
+  position: 1
+- name: subject_id
+  type: INTEGER
+  not_null: true
+  is_pk: false
+  autoincrement: false
+  is_unique: false
+  is_indexed: false
+  check_constraint: ''
+  check_template_key: ''
+  check_template_params: {}
+  description: 科目ID
+  position: 2
+- name: score
+  type: REAL
+  not_null: true
+  is_pk: false
+  autoincrement: false
+  is_unique: false
+  is_indexed: false
+  check_constraint: ''
+  check_template_key: ''
+  check_template_params: {}
+  description: 分数
+  position: 3
+- name: exam_date
+  type: DATE
+  not_null: false
+  is_pk: false
+  autoincrement: false
+  is_unique: false
+  is_indexed: false
+  check_constraint: ''
+  check_template_key: ''
+  check_template_params: {}
+  description: 考试日期
+  position: 4
+- name: created_at
+  type: INTEGER
+  not_null: true
+  is_pk: false
+  autoincrement: false
+  is_unique: false
+  is_indexed: false
+  check_constraint: ''
+  check_template_key: ''
+  check_template_params: {}
+  description: 创建时间
+  position: 5
+- name: updated_at
+  type: DATETIME
+  not_null: true
+  is_pk: false
+  autoincrement: false
+  is_unique: false
+  is_indexed: false
+  check_constraint: ''
+  check_template_key: ''
+  check_template_params: {}
+  description: 更新时间
+  position: 6
+foreign_keys:
+- columns:
+  - student_id
+  references: students
+  ref_columns:
+  - id
+- columns:
+  - subject_id
+  references: subjects
+  ref_columns:
+  - id
+datasource: primary

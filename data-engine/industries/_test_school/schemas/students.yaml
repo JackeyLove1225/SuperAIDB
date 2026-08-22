@@ -1,0 +1,95 @@
+name: students
+business_name: 学生
+description: 存储学生信息
+columns:
+- name: id
+  type: INTEGER
+  not_null: true
+  is_pk: true
+  autoincrement: true
+  is_unique: false
+  is_indexed: false
+  check_constraint: ''
+  check_template_key: ''
+  check_template_params: {}
+  description: 主键
+  position: 0
+- name: name
+  type: TEXT
+  not_null: true
+  is_pk: false
+  autoincrement: false
+  is_unique: false
+  is_indexed: false
+  check_constraint: ''
+  check_template_key: ''
+  check_template_params: {}
+  description: 学生姓名
+  position: 1
+- name: email
+  type: TEXT
+  not_null: false
+  is_pk: false
+  autoincrement: false
+  is_unique: false
+  is_indexed: false
+  check_constraint: ''
+  check_template_key: ''
+  check_template_params: {}
+  description: 邮箱
+  position: 2
+- name: phone
+  type: TEXT
+  not_null: false
+  is_pk: false
+  autoincrement: false
+  is_unique: false
+  is_indexed: false
+  check_constraint: ''
+  check_template_key: ''
+  check_template_params: {}
+  description: 电话
+  position: 3
+- name: class_id
+  type: INTEGER
+  not_null: true
+  is_pk: false
+  autoincrement: false
+  is_unique: false
+  is_indexed: false
+  check_constraint: ''
+  check_template_key: ''
+  check_template_params: {}
+  description: 所属班级ID
+  position: 4
+- name: created_at
+  type: DATETIME
+  not_null: true
+  is_pk: false
+  autoincrement: false
+  is_unique: false
+  is_indexed: false
+  check_constraint: ''
+  check_template_key: ''
+  check_template_params: {}
+  description: 创建时间
+  position: 5
+- name: updated_at
+  type: DATETIME
+  not_null: true
+  is_pk: false
+  autoincrement: false
+  is_unique: false
+  is_indexed: false
+  check_constraint: ''
+  check_template_key: ''
+  check_template_params: {}
+  description: 更新时间
+  position: 6
+foreign_keys:
+- columns:
+  - class_id
+  references: classes
+  ref_columns:
+  - id
+datasource: primary

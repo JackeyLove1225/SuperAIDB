@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  quick-regression:
+    runs-on: windows-latest
+    # 产品目标平台是 Windows：加密层（SQLCipher+keyring 凭据管理器）与 daemon
+    # 进程拉起都是 Windows 行为，CI 必须同平台才算真回归。
+    # 本仓库为 monorepo：引擎在 data-engine/，管理台在 agent-chat-ui/。
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies（后端）
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r data-engine/requirements.txt
+          pip install pytest
+
+      - name: Run quick regression suite（29 层离线，data-engine/tests）
+        # 离线层不调 AI（注入占位 key 过 settings 校验）；
+        # DB_ENCRYPT 不设——默认 true，加密层在 Windows 凭据管理器上真实跑；
+        # PYTHONUTF8：Windows runner 默认 GBK/charmap，run_all 打印的 ⚡ 等字符
+        # 会直接 UnicodeEncodeError（实测事故）
+        env:
+          AI_API_KEY: dummy-key-for-offline-ci
+          PYTHONUTF8: "1"
+          PYTHONIOENCODING: "utf-8"
+        run: |
+          cd data-engine
+          python tests/run_all.py --quick
+
+      - name: Setup pnpm + Node（前端）
+        uses: pnpm/action-setup@v4
+        with:
+          # 版本认 package.json 的 packageManager 字段（pnpm@10.5.1）——
+          # action-setup 不会自动找 monorepo 子目录，须显式指向
+          package_json_file: agent-chat-ui/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"  # 不挂 pnpm 缓存：post-run 缓存路径校验在 windows runner 实测报错（不修构建只省几十秒，不值当）
+
+      - name: 前端 typecheck + test + build
+        run: |
+          cd agent-chat-ui
+          pnpm install --frozen-lockfile
+          pnpm exec tsc --noEmit
+          pnpm test
+          pnpm build

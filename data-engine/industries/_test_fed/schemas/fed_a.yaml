@@ -1,0 +1,27 @@
+name: fed_a
+business_name: 表A
+description: 主表（primary）
+datasource: primary
+columns:
+- name: id
+  type: INTEGER
+  pk: true
+  not_null: true
+  business_name: 主键
+- name: code
+  type: VARCHAR
+  not_null: true
+  business_name: 编码
+- name: name
+  type: VARCHAR
+  not_null: true
+  business_name: 名称
+- name: value
+  type: FLOAT
+  business_name: 数值
+foreign_keys: []
+indexes:
+- name: idx_fed_a_code
+  columns:
+  - code
+  unique: true

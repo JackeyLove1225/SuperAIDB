@@ -1,0 +1,36 @@
+# 权限策略——按 数据源 × 操作类型 的访问控制
+# 热生效：编辑本文件后无需重启，下一次请求自动生效
+#
+# 操作类型：query / insert / update / delete / ddl / drop
+#   ddl  = create_table/add_column/modify_column/...（结构变更）
+#   drop = drop_table/drop_column/drop_foreign_key/drop_index（删除）
+#
+# 角色（对应 users 表的 role 字段 + permissions.yml 的 roles 规则）：
+#   admin    — 全权限（不配置角色规则 = 全放行）
+#   user     — 普通读写用户：可读写业务数据，但禁止结构变更/删除
+#   readonly — 只读用户：仅可查询，禁止一切写操作
+#   system   — 系统级（API Key/内部调用），不查角色规则
+
+# 全局默认：full（新数据源默认全权限，未显式配置时向后兼容）
+default: full
+
+# 数据源级规则（按数据源名配置模式/白名单/黑名单）
+datasources: {}
+
+# 角色级规则（叠加在数据源规则之上；deny 命中即禁，allow 白名单外全禁）
+# 自定义用户级角色：角色名可为任意标识符（如 user_zhangsan），管理员通过
+#   PUT /api/auth/users/{id}/role 给用户分配该角色，即"仅该用户受限"。
+# 角色内可嵌套表/列规则（仅该角色在该表/列上受限）：
+#   user_zhangsan:
+#     tables:
+#       quota_items:              # 张三查不了 quota_items 表
+#         deny: [query]
+#       users:
+#         columns:
+#           password_hash:        # 张三查不了 users 表的 password_hash 字段
+#             deny: [query]
+roles:
+  readonly:
+    deny: [insert, update, delete, ddl, drop]
+  user:
+    deny: [ddl, drop]

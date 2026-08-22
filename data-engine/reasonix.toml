@@ -1,0 +1,56 @@
+# ── data-engine 项目级 Reasonix 配置（20260809）──
+# 本文件随 data-engine 仓库分发：别人 clone 后 cd data-engine 启动
+# Reasonix，此配置自动加载（优先级 flag > ./reasonix.toml > 全局）。
+# 路径均相对 data-engine/ 目录（Reasonix 以启动目录为项目根）。
+
+# ── 权限模型边界：禁止上层 AI 直接写数据文件/权限配置 ──
+# 数据访问必须走 MCP 通道（受 MCP_ROLE + permissions.yml 约束），
+# 防 Bash 绕过应用层权限（改 permissions.yml / 直连 db 文件）。
+# 语法：deny > ask > allow，显式 Deny 在任何模式（含 YOLO）下不可绕过。
+# 本文件自身也入 deny：AI 不可改权限规则，调整权限只能由用户手动编辑。
+[permissions]
+deny = [
+  "Edit(*reasonix.toml*)",
+  "Write(*reasonix.toml*)",
+  "Edit(*config/permissions.yml*)",
+  "Write(*config/permissions.yml*)",
+  "Edit(*db/*)",
+  "Write(*db/*)",
+  "Bash(*reasonix.toml*)",
+  "Bash(*config/permissions.yml*)",
+  "Bash(*db/*)",
+  "Bash(python*data_engine.db*)",
+  "Bash(sqlite3*data_engine.db*)",
+]
+
+# 高危工具审批卡（第一层人审）：以下 MCP 工具 AI 发起调用前，Reasonix 原生
+# 审批卡必须先由用户点头（deny > ask > allow；与 MCP 进程内高危闸构成双层纵深）
+ask = [
+  "mcp__data-engine__edit_data",
+  "mcp__data-engine__delete_data",
+  "mcp__data-engine__mutate_data",
+  "mcp__data-engine__drop_table",
+  "mcp__data-engine__drop_column",
+  "mcp__data-engine__modify_column",
+  "mcp__data-engine__alter_precision",
+  "mcp__data-engine__set_not_null",
+  "mcp__data-engine__drop_foreign_key",
+  "mcp__data-engine__drop_index",
+  "mcp__data-engine__drop_template",
+  "mcp__data-engine__clear_db",
+  "mcp__data-engine__confirm_action",
+  "mcp__data-engine__escalate_permission",
+  "mcp__data-engine__deescalate_permission",
+]
+
+# ── data-engine MCP 插件（形态①：原生 Reasonix 作为上层 AI）──
+# data-engine 全部数据能力经 MCP stdio 暴露为 mcp__data-engine__* 工具。
+# 高危人审双层纵深：Reasonix 审批卡（第一层）+ MCP 进程内高危闸挂起表
+# token → confirm_action 结算（第二层，fail-closed）。
+# MCP_ROLE：MCP 是无用户上下文的通道，默认 readonly（只读）；需写能力
+# 必须显式配置 MCP_ROLE=admin（全权限）或 MCP_ROLE=user（禁 ddl/drop）。
+[[plugins]]
+name = "data-engine"
+command = "python"
+args = ["mcp_server.py"]
+env = { MCP_ROLE = "user" }

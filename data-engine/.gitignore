@@ -1,0 +1,75 @@
+# ===== 环境变量配置（含敏感信息）=====
+config/.env
+*.env
+.env.*
+!config/.env.example
+
+# ===== 数据库和向量数据 =====
+db/
+db/saga_journal/
+chroma_data/
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# ===== 运行时数据目录 =====
+uploads/
+cache/
+exports/
+sample_data/*
+!sample_data/.gitkeep
+
+# ===== Python 缓存 =====
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.libs/
+
+# ===== LangGraph / 运行时产物 =====
+.langgraph_api/
+schema_output.json
+pipeline_result.json
+perf_report*.json
+
+# ===== 日志文件 =====
+*.log
+logs/
+backend.log
+test_output*.log
+
+# ===== 进程文件 =====
+.backend_pids
+.launcher.lock
+
+# ===== 临时测试文件 =====
+tests_archive/
+archived/
+schemas_bak/
+schemas_snapshots/
+
+# ===== 编辑器/系统 =====
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# pip 构建产物
+*.egg-info/
+
+# 准确率评测实时日志
+tests/logs/
+
+# ===== �����������⣩=====
+config/backups/
+demo_shots/
+tests/.write_test
+
+# 人审挂起与提权状态（运行时文件契约，不入库）
+config/pending_approvals.json
+config/escalation.json
+
+# daemon 运行时文件（每启动重写）
+config/runtime/

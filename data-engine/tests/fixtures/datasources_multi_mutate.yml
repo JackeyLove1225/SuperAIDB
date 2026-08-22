@@ -1,0 +1,6 @@
+# test_24 专用数据源：独立刮削库，与其他测试库及演示库全隔离
+datasources:
+  primary:
+    type: sqlite
+    path: ./db/test_multi_mutate.db
+    is_default: true

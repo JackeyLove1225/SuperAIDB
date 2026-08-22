@@ -1,0 +1,75 @@
+# 决策树·删除域（bk=删）：删记录/表/字段/外键/索引/模板/会话
+# 共享叶子：clear_db/mc（见 _shared.yml）；dd/unsup 仅本域引用
+
+nodes:
+  del_obj:
+    c: db
+    m: 模板
+    l: drop_tmpl
+    r: del_ss
+  del_ss:
+    c: db
+    m: 会话
+    l: clear_ss
+    r: del_db
+  del_db:
+    c: db
+    m:
+    - 库
+    - 数据库
+    l: clear_db
+    r: del_table
+  del_table:
+    c: db
+    m: 表
+    l: dt
+    r: del_record
+  del_record:
+    c: db
+    m: 记录
+    l: dd
+    r: del_sel
+  del_sel:
+    c: db
+    m:
+    - 暂存
+    - 暂存数据
+    - 选择集
+    l: dd
+    r: del_field
+  del_field:
+    c: db
+    m: 字段
+    l: dc
+    r: del_fk
+  del_fk:
+    c: db
+    m: 外键
+    l: dfk
+    r: del_idx
+  del_idx:
+    c: db
+    m: 索引
+    l: di
+    r: del_type
+  del_type:
+    c: db
+    m: 类型
+    l: mc
+    r: unsup
+  clear_ss:
+    tool: clear_session
+  drop_tmpl:
+    tool: drop_template
+  dt:
+    tool: drop_table
+  dc:
+    tool: drop_column
+  dfk:
+    tool: drop_foreign_key
+  di:
+    tool: drop_index
+  dd:
+    tool: delete_data
+  unsup:
+    tool: unsupported_op

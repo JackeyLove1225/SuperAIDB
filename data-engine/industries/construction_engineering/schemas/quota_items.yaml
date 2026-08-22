@@ -1,0 +1,47 @@
+name: quota_items
+business_name: 定额项目主表
+description: 存储每个定额项目的核心信息，包括项目编码、名称、单位、基价等，是消耗量定额的基本单元
+columns:
+- name: id
+  type: INTEGER
+  pk: true
+  not_null: true
+  business_name: 主键
+- name: quota_code
+  type: TEXT
+  business_name: 定额编号
+  unique: true
+- name: quota_name
+  type: TEXT
+  business_name: 定额项目名称
+- name: unit
+  type: TEXT
+  business_name: 计量单位
+- name: base_price
+  type: FLOAT
+  business_name: 全费用基价
+- name: artificial_cost
+  type: FLOAT
+  business_name: 人工费
+- name: material_cost
+  type: FLOAT
+  business_name: 材料费
+- name: machine_cost
+  type: FLOAT
+  business_name: 机械费
+- name: management_cost
+  type: FLOAT
+  business_name: 管理费
+- name: profit
+  type: FLOAT
+  business_name: 利润
+foreign_keys: []
+indexes:
+- name: idx_quota_items_quota_code
+  columns:
+  - quota_code
+  unique: true
+display:
+  layout: kv
+  hide_columns:
+  - id
