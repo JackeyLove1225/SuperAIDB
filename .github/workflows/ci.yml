@@ -1,0 +1,123 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+# Windows runner 默认 GBK/charmap，脚本打印的中文/⚡ 等字符会直接
+# UnicodeEncodeError——UTF-8 口径全局统一，不再逐步重复
+env:
+  PYTHONUTF8: "1"
+  PYTHONIOENCODING: "utf-8"
+
+jobs:
+  quick-regression:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        python-version: ["3.12", "3.13"]  # 版本矩阵
+    # 产品目标平台是 Windows：加密层（SQLCipher+keyring 凭据管理器）与 daemon
+    # 进程拉起都是 Windows 行为，CI 必须同平台才算真回归。
+    # 本仓库为 monorepo：引擎在 data-engine/，管理台在 agent-chat-ui/。
+    # 注：本项目测试是 run_all.py 分层脚本制（每层独立子进程隔离单例态），
+    # 不是 pytest 同进程收集制——pytest 收集会把 26 层压进一个进程互相污染（实测红）。
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # 修复必配锁门禁需要 HEAD~1 对比（孤儿快照仓单提交时门禁自动跳过）
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies（后端）
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r data-engine/requirements.txt
+          pip install -r data-engine/requirements-dev.txt
+
+      - name: 修复必配锁门禁
+        # 安全关键面变更必须伴随测试变更
+        run: |
+          cd data-engine
+          python scripts/ci_fix_needs_test.py HEAD~1
+
+      - name: Ruff 静态门禁（死 import/未用变量/未定义名）
+        # 规则真源在 pyproject.toml [tool.ruff]（本地/CI 同口径，此处只给路径面）
+        run: |
+          cd data-engine
+          ruff check mcp_server.py core/ agent/ pipeline/ industries/ tests/ config/ scripts/
+
+      - name: 依赖方向守护（core 不得 import agent）
+        run: |
+          cd data-engine
+          python scripts/ci_dep_direction.py
+
+      - name: 病型库全仓扫（修复断链防御）
+        run: |
+          cd data-engine
+          python scripts/review_sweep.py
+
+      - name: Run quick regression suite（26 层离线，data-engine/tests）
+        # 离线层不调 AI（注入占位 key 过 settings 校验）；
+        # DB_ENCRYPT 不设——默认 true，加密层在 Windows 凭据管理器上真实跑；
+        # PYTHONUTF8：Windows runner 默认 GBK/charmap，run_all 打印的 ⚡ 等字符
+        # 会直接 UnicodeEncodeError
+        env:
+          AI_API_KEY: dummy-key-for-offline-ci
+        run: |
+          cd data-engine
+          python tests/run_all.py --quick
+
+      - name: daemon 生产装配抽样（层 19/28/35/37）
+        # 生产默认 DAEMON_MODE=true，抽样层按生产装配跑
+        env:
+          AI_API_KEY: dummy-key-for-offline-ci
+        run: |
+          cd data-engine
+          python tests/run_all.py --layer 19,28,35,37 --daemon-ok
+
+      - name: 覆盖率（core/agent/pipeline/industries）
+        env:
+          AI_API_KEY: dummy-key-for-offline-ci
+          RUN_ALL_COVERAGE: "1"
+        run: |
+          cd data-engine
+          python tests/run_all.py --quick
+          python -m coverage combine
+          python -m coverage report --fail-under=50 --show-missing
+          # 阈值是棘轮不是目标：与 dev 仓同源 50%（真源 data-engine/.github/workflows/ci.yml）
+          # runner 10%/routing 5%/ocr 0%/ingestion 45%——后续补测试层逐级上调）
+
+      - name: Setup pnpm + Node（前端）
+        uses: pnpm/action-setup@v6
+        with:
+          # 版本认 package.json 的 packageManager 字段（pnpm@10.5.1）——
+          # action-setup 不会自动找 monorepo 子目录，须显式指向
+          package_json_file: agent-chat-ui/package.json
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"  # 不挂 pnpm 缓存：post-run 缓存路径校验在 windows runner 实测报错（不修构建只省几十秒，不值当）
+
+      - name: 前端 typecheck + test + build
+        run: |
+          cd agent-chat-ui
+          pnpm install --frozen-lockfile
+          pnpm exec tsc --noEmit
+          pnpm test
+          pnpm build
+
+      - name: 前端冒烟（build 产物启动后页面可访问）
+        # 控制台双前缀 404 类整页回归的 CI 兜底——build 绿不代表页面能开
+        shell: bash
+        run: |
+          cd agent-chat-ui
+          (pnpm start -p 3100 > smoke.log 2>&1 &)
+          for i in $(seq 1 30); do
+            curl -sf http://127.0.0.1:3100/ -o /dev/null && break || sleep 2
+          done
+          curl -sf http://127.0.0.1:3100/ -o /dev/null
+          curl -sf http://127.0.0.1:3100/dashboard -o /dev/null
+          curl -sf http://127.0.0.1:3100/dashboard/schema-designer -o /dev/null
+          echo "冒烟通过：首页/控制台/表设计器全部 200"

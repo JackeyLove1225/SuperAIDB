@@ -1,0 +1,6 @@
+# test_22 专用数据源：独立刮削库，与 test_19（test_dml.db）及演示库全隔离
+datasources:
+  primary:
+    type: sqlite
+    path: ./db/test_agent_loop.db
+    is_default: true

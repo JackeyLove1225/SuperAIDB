@@ -1,0 +1,32 @@
+name: teachers
+business_name: 教师
+description: 存储教师信息
+columns:
+- name: id
+  type: INTEGER
+  not_null: true
+  is_pk: true
+  autoincrement: true
+  description: 主键
+- name: name
+  type: TEXT
+  not_null: true
+  description: 教师姓名
+- name: email
+  type: TEXT
+  not_null: false
+  description: 邮箱
+- name: phone
+  type: TEXT
+  not_null: false
+  description: 电话
+- name: created_at
+  type: DATETIME
+  not_null: true
+  description: 创建时间
+- name: updated_at
+  type: DATETIME
+  not_null: true
+  description: 更新时间
+foreign_keys: []
+datasource: primary

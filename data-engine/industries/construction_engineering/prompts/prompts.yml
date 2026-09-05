@@ -1,0 +1,42 @@
+classification_hints: 根据文档内容分类，注意识别表格标题、列名和数据类型
+decompose_examples: []
+router_examples: []
+schema_hints: 提取表格中的列名、业务含义、数据类型等信息，重点关注编号、名称、单位、单价等关键字段
+terminology:
+  behavior_aliases:
+    删:
+    - 删除
+    - 移除
+    - 清除
+    增:
+    - 新增
+    - 添加
+    - 录入
+    - 插入
+    改:
+    - 修改
+    - 更新
+    - 编辑
+    - 变更
+    查:
+    - 查询
+    - 查找
+    - 检索
+    - 查看
+    - 看看
+    - 查一下
+    - 查查
+  object_aliases:
+    字段:
+    - 列
+    - 属性
+    - 数据项
+    表:
+    - 表格
+    - 数据表
+    - 数据集合
+    记录:
+    - 条目
+    - 数据行
+    - 数据记录
+  table_aliases: {}

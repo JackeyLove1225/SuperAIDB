@@ -1,0 +1,63 @@
+# 决策树·修改域（bk=改）：改记录/字段/外键/索引/类型/精度
+# 共享叶子：save_tmpl/ds/afk/ci/mc/clear_db（见 _shared.yml）
+
+nodes:
+  mod_obj:
+    c: db
+    m: 模板
+    l: save_tmpl
+    r: mod_db
+  mod_db:
+    c: db
+    m:
+    - 库
+    - 数据库
+    l: clear_db
+    r: mod_table
+  mod_table:
+    c: db
+    m: 表
+    l: unsup  # 改表（重命名等）暂不支持（如实报，不拿 schema 文本冒充改表成功）
+    r: mod_record
+  mod_record:
+    c: db
+    m: 记录
+    l: ud
+    r: mod_field
+  mod_field:
+    c: db
+    m: 字段
+    l: mod_nn
+    r: mod_fk
+  mod_fk:
+    c: db
+    m: 外键
+    l: afk
+    r: mod_idx
+  mod_idx:
+    c: db
+    m: 索引
+    l: ci
+    r: mod_type
+  mod_type:
+    c: db
+    m: 类型
+    l: mc
+    r: mod_prec
+  mod_nn:
+    c: constraint
+    m:
+    - 非空
+    l: snn
+    r: mc
+  mod_prec:
+    c: db
+    m: 精度
+    l: ap
+    r: unsup
+  snn:
+    tool: set_not_null
+  ud:
+    tool: edit_data
+  ap:
+    tool: alter_precision

@@ -1,0 +1,8 @@
+datasources:
+  primary:
+    is_default: true
+    path: ./db/data_engine.db
+    type: sqlite
+  secondary:
+    path: ./db/fed_secondary.db
+    type: sqlite

@@ -1,0 +1,75 @@
+# 决策树·查询域（bk=查）：db 维度细分到查询类工具
+# 共享叶子：ds（describe_schema，见 _shared.yml）被查/增/改三域复用
+
+nodes:
+  q_obj:
+    c: db
+    m: 模板
+    l: list_tmpl
+    r: q_file
+  q_file:
+    c: db
+    m: 文件
+    l: sdoc
+    r: q_session
+  q_session:
+    c: db
+    m: 会话
+    l: query
+    r: q_sel
+  q_sel:
+    c: db
+    m:
+    - 暂存
+    - 暂存数据
+    - 选择集
+    l: lse
+    r: q_db
+  q_db:
+    c: db
+    m:
+    - 库
+    - 数据库
+    l: ld
+    r: q_table_str
+  q_table_str:
+    c: db
+    m:
+    - 表
+    - 记录
+    l: q_table
+    r: q_join
+  q_table:
+    c: db
+    m: 表
+    l: ds
+    r: q_record
+  q_record:
+    c: db
+    m: 记录
+    l: query
+    r: ds
+  q_join:
+    c: db
+    m: 关联
+    l: jq
+    r: q_agg
+  q_agg:
+    c: db
+    m: 统计
+    l: aq
+    r: ds
+  list_tmpl:
+    tool: list_templates
+  query:
+    tool: query
+  jq:
+    tool: join_query
+  aq:
+    tool: aggregate_query
+  ld:
+    tool: list_databases
+  lse:
+    tool: list_selections
+  sdoc:
+    tool: search_documents

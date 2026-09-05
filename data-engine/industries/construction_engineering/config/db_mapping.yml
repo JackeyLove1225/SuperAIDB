@@ -1,0 +1,69 @@
+# 业务名词 → 数据库对象映射（工程造价定额库）
+db_category_mapping:
+  记录:
+    - 定额
+    - 价格
+    - 材料
+    - 机械
+    - 费用
+    - 数量
+    - 消耗
+    - 单价
+    - 编号
+    - 信息
+    - 内容
+    - 值
+  结构:
+    - 表结构
+    - 字段列表
+    - 外键关系
+    - 表格
+  表:
+    - 定额表
+    - 标准表
+  字段:
+    - 字段名
+    - 列名
+    - 备注
+  外键:
+    - 外键约束
+    - 引用关系
+
+# 业务表名 → 物理表
+table_mapping:
+  定额表: quota_items
+  定额: quota_items
+  定额项目表: quota_items
+  定额主表: quota_items
+  材料: quota_materials
+  材料明细表: quota_materials
+  材料消耗表: quota_materials
+  人工: quota_labor
+  人工明细表: quota_labor
+  人工费表: quota_labor
+  机械: quota_machines
+  机械明细表: quota_machines
+  机械消耗表: quota_machines
+
+# 业务字段名 → 表.字段
+field_mapping:
+  定额编号: quota_items.quota_code
+  定额名称: quota_items.quota_name
+  单位: quota_items.unit
+  基价: quota_items.base_price
+  人工费: quota_items.artificial_cost
+  材料费: quota_items.material_cost
+  机械费: quota_items.machine_cost
+  管理费: quota_items.management_cost
+  利润: quota_items.profit
+  材料名称: quota_materials.material_name
+  规格: quota_materials.material_spec
+  消耗量: quota_materials.consumption_quantity
+  单价: quota_materials.unit_price
+  人工类型: quota_labor.labor_type
+  工日数量: quota_labor.work_day_quantity
+  工日单价: quota_labor.day_wage_rate
+  机械名称: quota_machines.machine_name
+  机械型号: quota_machines.machine_model
+  台班数量: quota_machines.shift_quantity
+  台班单价: quota_machines.shift_price

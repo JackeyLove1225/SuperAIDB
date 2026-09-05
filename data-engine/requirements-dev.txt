@@ -1,0 +1,5 @@
+# 开发/测试/CI 工具链（钉版本——同代码不同日不同结果的面消除）
+# 生产运行只需 requirements.txt；跑测试/门禁才需要本文件
+pytest==9.1.1      # test_19/test_40 模块级 import（quick 层必装）
+coverage==7.13.2   # 覆盖率棘轮（CI --fail-under=50）
+ruff==0.16.4       # F401/F811/F841/F821 门禁

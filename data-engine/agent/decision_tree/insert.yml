@@ -1,0 +1,68 @@
+# 决策树·新增域（bk=增）：建表/插记录/加字段/加外键/加索引
+# 共享叶子：afk/ci（改域复用，见 _shared.yml）；ac 仅本域引用（add_idx 兜底）
+
+nodes:
+  add_obj:
+    c: db
+    m: 模板
+    l: save_tmpl
+    r: add_db
+  add_db:
+    c: db
+    m:
+    - 库
+    - 数据库
+    l: unsup  # 建库暂不支持（如实报，不拿 schema 文本冒充建库成功）
+    r: add_table
+  add_table:
+    c: db
+    m: 表
+    l: crt_constraint
+    r: add_record
+  crt_constraint:
+    c: constraint
+    m:
+    - ''
+    - 新建
+    - 自定义
+    l: bct
+    r: cst
+  add_record:
+    c: db
+    m: 记录
+    l: ins_constraint
+    r: add_field
+  ins_constraint:
+    c: constraint
+    m:
+    - ''
+    - 一个
+    - 一条
+    - 单条
+    l: ins
+    r: bins
+  add_field:
+    c: db
+    m: 字段
+    l: ac
+    r: add_fk
+  add_fk:
+    c: db
+    m: 外键
+    l: afk
+    r: add_idx
+  add_idx:
+    c: db
+    m: 索引
+    l: ci
+    r: unsup
+  bct:
+    tool: batch_create_tables
+  cst:
+    tool: create_standard_tables
+  ins:
+    tool: insert_data
+  bins:
+    tool: batch_insert_data
+  ac:
+    tool: add_column

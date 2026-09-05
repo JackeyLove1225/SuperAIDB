@@ -1,0 +1,5 @@
+default_table_name: fed_a
+description: 联邦测试
+expert_role: 测试
+hierarchy_desc: A → B → C
+name: _test_fed

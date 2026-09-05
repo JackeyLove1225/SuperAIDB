@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "data-engine"
+version = "0.1.0"
+description = "SuperAIDB 数据引擎：MCP 能力面 + FastAPI 的数据处理与 Agent 服务"
+requires-python = ">=3.12"
+dependencies = [
+    # ---- AI / Agent ----
+    "langgraph==1.2.9",
+    "openai==2.45.0",
+    # ---- Web 服务 ----
+    "fastapi==0.138.0",
+    "uvicorn==0.49.0",
+    # ---- 数据库 ----
+    "chromadb==1.5.9",
+    "PyMySQL==1.1.2",
+    "sqlcipher3>=0.5.4",
+    "keyring>=25.0",
+    "ladybug==0.19.1",
+    # ---- MCP 能力面 ----
+    "mcp>=1.29,<2.0",
+    # ---- 文件解析 ----
+    "openpyxl==3.1.5",
+    "python-docx==1.2.0",
+    "PyMuPDF==1.26.7",
+    "Pillow==12.0.0",
+    "requests==2.32.5",
+    # ---- 配置 / 工具 ----
+    "python-dotenv==1.2.1",
+    "PyYAML==6.0.2",
+    "psutil==7.1.3",
+    "pystray==0.19.5",
+]
+
+# 项目不是包结构（无 src 布局），仅用于声明元数据；
+# 显式置空避免 setuptools 对扁平多目录自动发现报错。
+[tool.setuptools]
+py-modules = []
+
+# ruff 规则单一真源——本地 `ruff check` 与 CI 门禁同口径（CI 命令不再内联规则）
+[tool.ruff]
+lint.select = ["F401", "F811", "F841", "F821"]

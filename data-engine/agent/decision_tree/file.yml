@@ -1,0 +1,23 @@
+# 决策树·文件域（bk=导入/上传/导出）：文件入库/模板导入/上传/导出
+# （st 叶已删：导出兜底 fail-closed 到 unsup，20260824 硬路由——
+#  save_template 仍经 save_tmpl 叶在增/改域可达）
+
+nodes:
+  im_obj:
+    c: db
+    m: 文件
+    l: pf
+    r: it
+  ex_obj:
+    c: db
+    m: 记录
+    l: export
+    r: unsup
+  pf:
+    tool: process_file
+  it:
+    tool: import_template
+  uf:
+    tool: upload_file
+  export:
+    tool: export_data

@@ -1,0 +1,101 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+# Windows runner 默认 GBK/charmap，脚本打印的中文/⚡ 等字符会直接
+# UnicodeEncodeError——UTF-8 口径全局统一，不再逐步重复
+env:
+  PYTHONUTF8: "1"
+  PYTHONIOENCODING: "utf-8"
+
+jobs:
+  quick-regression:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        python-version: ["3.12", "3.13"]  # 版本矩阵：3.12 杀进程原语
+                                          # 类差异必须有 CI 证据，不能只靠 3.13 开发机
+    # quick = 26 个离线测试层（含加密边界/守护进程/权限/MCP/管理API面/launcher/口径守护/硬路由）。
+    # 产品目标平台是 Windows：加密层（SQLCipher+keyring 凭据管理器）与 daemon
+    # 进程拉起都是 Windows 行为，CI 必须同平台才算真回归。
+    # 注：本项目测试是 run_all.py 分层脚本制（每层独立子进程隔离单例态），
+    # 不是 pytest 同进程收集制——pytest 收集会把 26 层压进一个进程，
+    # 单例/共享状态互相污染（实测红）。故 CI 唯一门槛 = run_all --quick。
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 修复必配锁门禁需要 push 事件的 before 全量对比（多提交 push 只检末提交会漏检中间提交）
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt  # 测试/门禁工具链（钉版本单源）
+
+      - name: 修复必配锁门禁
+        # 安全关键面（contract/permission/daemon/crypto/routers/tools）变更必须
+        # 伴随测试变更——防"修复裸奔"
+        # base 口径：push 事件取 github.event.before（本 push 全部提交）；
+        # 非 push（PR/手动）取 HEAD~1——多提交 push 只检末提交的逃逸面已堵
+        run: python scripts/ci_fix_needs_test.py ${{ github.event.before || 'HEAD~1' }}
+
+      - name: Ruff 静态门禁（死 import/未用变量/未定义名）
+        # 规则真源在 pyproject.toml [tool.ruff]（本地/CI 同口径，此处只给路径面）
+        run: ruff check mcp_server.py core/ agent/ pipeline/ industries/ tests/ config/ scripts/
+
+      - name: 依赖方向守护（core 不得 import agent）
+        run: python scripts/ci_dep_direction.py
+
+      # 前端仓第二 checkout（前端病型规则在 CI 经 SWEEP_UI_DIR 生效——
+      # 兄弟仓布局只在开发机存在；公开仓快照内含 agent-chat-ui/）
+      - name: Checkout UI snapshot（前端病型扫描面）
+        uses: actions/checkout@v4
+        with:
+          repository: JackeyLove1225/SuperAIDB
+          # 钉 ref：默认分支漂移会让本仓 CI 被外部仓改名/私有化了连坐
+          ref: ea39558301889db8f06c17ba5a6f6d50f76fb26c
+          path: ui
+          fetch-depth: 1
+
+      - name: 病型库全仓扫（修复断链防御）
+        env:
+          SWEEP_UI_DIR: ui/agent-chat-ui
+        run: python scripts/review_sweep.py
+
+      - name: Run quick regression suite (26 层离线)
+        # 离线层不调 AI（注入占位 key 过 AIClient 构造期非空校验——
+        # core/ai_runtime/ai_client.py:34 是必填校验的唯一实现点）；
+        # DB_ENCRYPT 不设——默认 true，加密层在 Windows 凭据管理器上真实跑
+        # PYTHONUTF8：Windows runner 默认 GBK/charmap，run_all 打印的 ⚡ 等字符
+        # 会直接 UnicodeEncodeError
+        env:
+          AI_API_KEY: dummy-key-for-offline-ci
+        run: python tests/run_all.py --quick
+
+      - name: daemon 生产装配抽样（层 19/28/35/37 按产品默认 daemon 模式）
+        # 生产默认 DAEMON_MODE=true，人审跨进程链（28）恰是 daemon 模式最高危面——
+        # 抽样覆盖 19(记录DML)/28(人审链)/35(daemon 专项)/37(管理API)。
+        # 已知缺口如实说：层 29（多表改删）的用例装配是进程内直连语境
+        #（影响面计数字段在 daemon RPC 路径下口径不同），daemon 化属测试改造，
+        # 未纳入抽样——该层的直连回归在 quick 套件中全量执行。
+        env:
+          AI_API_KEY: dummy-key-for-offline-ci
+        run: python tests/run_all.py --layer 19,28,35,37 --daemon-ok
+
+      - name: 覆盖率（core/agent/pipeline/industries）
+        env:
+          AI_API_KEY: dummy-key-for-offline-ci
+          RUN_ALL_COVERAGE: "1"
+        run: |
+          python tests/run_all.py --quick
+          python -m coverage combine
+          python -m coverage report --fail-under=50 --show-missing
+          # 阈值是棘轮不是目标：20260823 实测基线 44% → 20260825 上调 50%（实测 52%，执行而非承诺；pipeline 是洼地：
+          # runner 10%/routing 5%/ocr 0%/ingestion 45%——P3/P4 补测试层后逐级上调）

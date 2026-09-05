@@ -1,0 +1,3 @@
+default: full
+datasources: {}
+users: {}

@@ -1,0 +1,119 @@
+quota_code:
+  alias:
+  - 定额编号
+  - 定额编码
+  - 编号
+  - 子目编号
+  type: TEXT
+quota_name:
+  alias:
+  - 定额名称
+  - 定额项目名称
+  - 项目名称
+  - 子目名称
+  type: TEXT
+unit:
+  alias:
+  - 单位
+  - 计量单位
+  type: TEXT
+base_price:
+  alias:
+  - 基价
+  - 全费用基价
+  - 定额基价
+  type: FLOAT
+artificial_cost:
+  alias:
+  - 人工费
+  - 人工
+  type: FLOAT
+material_cost:
+  alias:
+  - 材料费
+  - 材料
+  type: FLOAT
+machine_cost:
+  alias:
+  - 机械费
+  - 机械
+  type: FLOAT
+management_cost:
+  alias:
+  - 管理费
+  type: FLOAT
+profit:
+  alias:
+  - 利润
+  type: FLOAT
+quota_item_id:
+  alias:
+  - 定额子目ID
+  - 定额ID
+  - 定额id
+  - 主表ID
+  type: INTEGER
+material_name:
+  alias:
+  - 材料名称
+  - 材料名
+  - 材料品种
+  type: TEXT
+material_spec:
+  alias:
+  - 规格
+  - 材料规格
+  - 规格型号
+  type: TEXT
+consumption_quantity:
+  alias:
+  - 消耗量
+  - 用量
+  - 材料用量
+  type: FLOAT
+unit_price:
+  alias:
+  - 单价
+  - 价格
+  type: FLOAT
+labor_type:
+  alias:
+  - 人工类型
+  - 工种
+  - 人工种类
+  type: TEXT
+work_day_quantity:
+  alias:
+  - 工日数量
+  - 工日数
+  - 工日
+  type: FLOAT
+day_wage_rate:
+  alias:
+  - 工日单价
+  - 日工资
+  - 工日工资
+  type: FLOAT
+machine_name:
+  alias:
+  - 机械名称
+  - 机械名
+  - 设备名称
+  type: TEXT
+machine_model:
+  alias:
+  - 机械型号
+  - 型号
+  - 设备型号
+  type: TEXT
+shift_quantity:
+  alias:
+  - 台班数量
+  - 台班数
+  - 台班
+  type: FLOAT
+shift_price:
+  alias:
+  - 台班单价
+  - 台班费
+  type: FLOAT

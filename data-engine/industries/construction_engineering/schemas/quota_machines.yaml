@@ -1,0 +1,93 @@
+name: quota_machines
+business_name: 定额机械明细表
+description: 存储每个定额项目下消耗的机械台班明细，与定额项目主表通过quota_code关联
+columns:
+- name: id
+  type: INTEGER
+  not_null: true
+  is_pk: true
+  autoincrement: true
+  is_unique: false
+  is_indexed: false
+  check_constraint: ''
+  check_template_key: ''
+  check_template_params: {}
+  description: ''
+  position: 0
+  business_name: 主键
+- name: quota_item_id
+  type: INTEGER
+  not_null: false
+  is_pk: false
+  autoincrement: false
+  is_unique: false
+  is_indexed: false
+  check_constraint: ''
+  check_template_key: ''
+  check_template_params: {}
+  description: ''
+  position: 1
+  business_name: 所属定额项目
+- name: machine_name
+  type: TEXT
+  not_null: false
+  is_pk: false
+  autoincrement: false
+  is_unique: false
+  is_indexed: false
+  check_constraint: ''
+  check_template_key: ''
+  check_template_params: {}
+  description: ''
+  position: 2
+  business_name: 机械名称
+- name: machine_model
+  type: TEXT
+  not_null: false
+  is_pk: false
+  autoincrement: false
+  is_unique: false
+  is_indexed: false
+  check_constraint: ''
+  check_template_key: ''
+  check_template_params: {}
+  description: ''
+  position: 3
+  business_name: 机械型号
+- name: shift_quantity
+  type: REAL
+  not_null: false
+  is_pk: false
+  autoincrement: false
+  is_unique: false
+  is_indexed: false
+  check_constraint: ''
+  check_template_key: ''
+  check_template_params: {}
+  description: ''
+  position: 4
+  business_name: 台班数量
+- name: shift_price
+  type: REAL
+  not_null: false
+  is_pk: false
+  autoincrement: false
+  is_unique: false
+  is_indexed: false
+  check_constraint: ''
+  check_template_key: ''
+  check_template_params: {}
+  description: ''
+  position: 5
+  business_name: 台班单价
+foreign_keys:
+- columns:
+  - quota_item_id
+  references: quota_items
+  ref_columns:
+  - id
+display:
+  hide_columns:
+  - id
+  - quota_item_id
+datasource: primary

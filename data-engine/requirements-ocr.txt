@@ -1,0 +1,4 @@
+# 可选：本地 OCR 引擎（体积大，仅离线/保密场景需要）
+# 主路径为云端 OCR（pipeline/ocr.py，仅需 requests）；本文件装本地引擎：
+#   pip install -r requirements-ocr.txt
+paddleocr==3.3.2  # core/parser/image_parser 可选加载

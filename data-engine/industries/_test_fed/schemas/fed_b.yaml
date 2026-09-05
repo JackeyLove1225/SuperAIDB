@@ -1,0 +1,35 @@
+name: fed_b
+business_name: 表B
+description: 从表（secondary）
+datasource: secondary
+columns:
+- name: id
+  type: INTEGER
+  pk: true
+  not_null: true
+  business_name: 主键
+- name: a_id
+  type: INTEGER
+  not_null: true
+  description: 外键→fed_a.id
+- name: category
+  type: VARCHAR
+  not_null: true
+  business_name: 类别
+- name: amount
+  type: FLOAT
+  business_name: 金额
+- name: note
+  type: TEXT
+  business_name: 备注
+foreign_keys:
+- columns:
+  - a_id
+  references: fed_a
+  ref_columns:
+  - id
+indexes:
+- name: idx_fed_b_aid
+  columns:
+  - a_id
+  unique: false

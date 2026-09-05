@@ -1,0 +1,28 @@
+name: subjects
+business_name: 科目
+description: 存储科目信息
+columns:
+- name: id
+  type: INTEGER
+  not_null: true
+  is_pk: true
+  autoincrement: true
+  description: 主键
+- name: name
+  type: TEXT
+  not_null: true
+  description: 科目名称
+- name: description
+  type: TEXT
+  not_null: false
+  description: 科目描述
+- name: created_at
+  type: DATETIME
+  not_null: true
+  description: 创建时间
+- name: updated_at
+  type: DATETIME
+  not_null: true
+  description: 更新时间
+foreign_keys: []
+datasource: primary

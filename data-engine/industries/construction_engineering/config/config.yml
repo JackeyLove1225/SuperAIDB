@@ -1,0 +1,5 @@
+default_table_name: ""
+description: 建筑工程造价行业数据库（内置定额库 Schema 包：4 表 / 28 字段 / 3 外键关系，含术语与字段映射）
+expert_role: 你是建筑工程造价专家，精通各类工程定额、清单计价
+hierarchy_desc: 数据有完整的分级体系：工程专业大类 → 分部工程 → 分项工程 → 具体定额条目
+name: construction_engineering
